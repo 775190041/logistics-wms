@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nf.dao.InvoiceMapper">
+    <resultMap id="BaseResultMap" type="com.nf.entity.Invoice">
+        <id column="in_id" property="inId"/>
+        <result column="in_name"  property="inName"/>
+        <result column="in_SKUmodel" property="inSkumodel"/>
+        <result column="in_num"  property="inNum"/>
+        <result column="in_whid" property="inWhid"/>
+        <result column="in_oddnumber"  property="inOddnumber"/>
+        <result column="in_time" property="inTime"/>
+        <result column="in_volume" property="inVolume"/>
+        <result column="in_store" property="inStore"/>
+        <result column="in_phone" property="inPhone"/>
+        <result column="in_damage" property="inDamage"/>
+        <result column="in_cause" property="inCause"/>
+        <result column="in_totalweigh" property="inTotalweigh"/>
+        <result column="in_status" property="inStatus"/>
+        <collection property="godowns" ofType="com.nf.entity.Godown">
+            <id column="go_id"  property="goId"/>
+            <result column="go_whid"  property="goWhid"/>
+            <result column="go_p"  property="goP"/>
+            <result column="go_volume"  property="goVolume"/>
+            <result column="go_usevolume"  property="goUsevolume"/>
+            <result column="go_rdvolume" property="goRdvolume"/>
+        </collection>
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+      in_id, in_name, in_SKUmodel, in_num, in_whid, in_oddnumber, in_time, in_volume,in_store,in_phone,
+      in_damage,in_cause,in_totalweigh,in_status
+    </sql>
+
+    <select id="queryAll" resultMap="BaseResultMap">
+        select * from  invoice
+    </select>
+
+    <!-- 根据ID查询 -->
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from invoice
+        where in_id = #{inId}
+    </select>
+    <!-- 分页查询 -->
+    <select id="selectInvoicePage" resultMap="BaseResultMap">
+        select
+        ins.in_id, ins.in_name, ins.in_SKUmodel, ins.in_num, ins.in_whid, ins.in_oddnumber, ins.in_time, ins.in_volume,ins.in_store, ins.in_phone, ins.in_damage, ins.in_cause, ins.in_totalweigh, ins.in_status , g.*
+        from invoice ins, godown g
+        where ins.in_whid = g.go_whid
+        <if test=" name != null and name != '' ">
+            and in_name like concat('%', #{name}, '%')
+        </if>
+        <if test="startTime != null">
+            <![CDATA[ in_time >= #{startTime} ]]>
+        </if>
+        <if test="endTime != null">
+            <![CDATA[ and in_time <= #{endTime} ]]>
+        </if>
+    </select>
+
+    <!-- 根据ID删除 -->
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from invoice
+        where in_id = #{inId}
+    </delete>
+
+    <insert id="insert" parameterType="com.nf.entity.Invoice">
+        insert into invoice (in_id, in_name, in_SKUmodel,
+          in_num, in_whid, in_oddnumber,
+          in_time, in_volume, in_store, in_phone, in_damage, in_cause, in_totalweigh, in_status)
+        values (#{inId}, #{inName}, #{inSkumodel},
+          #{inNum}, #{inWhid}, #{inOddnumber},
+          #{inTime}, #{inVolume},#{store}, #{phone},
+          #{damage},#{cause},#{totalweigh},#{status})
+    </insert>
+    <insert id="insertSelective" parameterType="com.nf.entity.Invoice">
+        insert into invoice
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="inId != null">
+                in_id,
+            </if>
+            <if test="inName != null">
+                in_name,
+            </if>
+            <if test="inSkumodel != null">
+                in_SKUmodel,
+            </if>
+            <if test="inNum != null">
+                in_num,
+            </if>
+            <if test="inWhid != null">
+                in_whid,
+            </if>
+            <if test="inOddnumber != null">
+                in_oddnumber,
+            </if>
+            <if test="inTime != null">
+                in_time,
+            </if>
+            <if test="inVolume != null">
+                in_volume,
+            </if>
+            <if test="inStore != null">
+                in_store,
+            </if>
+            <if test="inPhone != null">
+                in_phone,
+            </if>
+            <if test="inDamage != null">
+                in_damage,
+            </if>
+            <if test="inCause != null">
+                in_cause,
+            </if>
+            <if test="inTotalweigh != null">
+                in_totalweigh,
+            </if>
+            <if test="inStatus != null">
+                in_status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="inId != null">
+                #{inId},
+            </if>
+            <if test="inName != null">
+                #{inName},
+            </if>
+            <if test="inSkumodel != null">
+                #{inSkumodel},
+            </if>
+            <if test="inNum != null">
+                #{inNum},
+            </if>
+            <if test="inWhid != null">
+                #{inWhid},
+            </if>
+            <if test="inOddnumber != null">
+                #{inOddnumber},
+            </if>
+            <if test="inTime != null">
+                #{inTime},
+            </if>
+            <if test="inVolume != null">
+                #{inVolume},
+            </if>
+            <if test="inStore != null">
+                #{inStore},
+            </if>
+            <if test="inPhone != null">
+                #{inPhone},
+            </if>
+            <if test="inDamage != null">
+                #{inDamage},
+            </if>
+            <if test="inCause != null">
+                #{inCause},
+            </if>
+            <if test="inTotalweigh != null">
+                #{inTotalweigh},
+            </if>
+            <if test="inStatus != null">
+                #{inStatus},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.nf.entity.Invoice">
+        update invoice
+        <set>
+            <if test="inName != null">
+                in_name = #{inName},
+            </if>
+            <if test="inSkumodel != null">
+                in_SKUmodel = #{inSkumodel},
+            </if>
+            <if test="inNum != null">
+                in_num = #{inNum},
+            </if>
+            <if test="inWhid != null">
+                in_whid = #{inWhid},
+            </if>
+            <if test="inOddnumber != null">
+                in_oddnumber = #{inOddnumber},
+            </if>
+            <if test="inTime != null">
+                in_time = #{inTime},
+            </if>
+            <if test="inVolume != null">
+                in_volume = #{inVolume},
+            </if>
+            <if test="inStore != null">
+                in_store = #{inStore},
+            </if>
+            <if test="inPhone != null">
+                in_phone = #{inPhone},
+            </if>
+            <if test="inDamage != null">
+                in_damage = #{inDamage},
+            </if>
+            <if test="inCause != null">
+                in_cause = #{inCause},
+            </if>
+            <if test="inTotalweigh != null">
+                in_totalweigh = #{inTotalweigh},
+            </if>
+            <if test="inStatus != null">
+                in_status = #{inStatus},
+            </if>
+        </set>
+        where in_id = #{inId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.nf.entity.Invoice">
+        update invoice
+        set in_name = #{inName},
+          in_SKUmodel = #{inSkumodel},
+          in_num = #{inNum},
+          in_whid = #{inWhi},
+          in_oddnumber = #{inOddnumber},
+          in_time = #{inTime},
+          in_volume = #{inVolume},
+          in_store = #{store},
+	      in_phone = #{phone},
+	      in_damage = #{damage},
+	      in_cause = #{cause},
+	      in_totalweigh = #{totalweigh},
+	      in_status = #{status}
+        where in_id = #{inId}
+    </update>
+</mapper>

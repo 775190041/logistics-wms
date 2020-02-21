@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nf.dao.ResourceMapper">
+    <!-- 通用查询结果列-->
+    <sql id="Base_Column_List">
+        id, name, url, description, icon, pid, seq, status, resource_type AS resourceType, create_time AS createTime
+    </sql>
+
+  <!--  查询所有父菜单 父类菜单得pid 是空值-->
+    <select id="selectAllByTypeAndPidNull" resultType="com.nf.entity.Resource">
+        select distinct
+        <include refid="Base_Column_List"/> from resource
+        where resource_type = #{resourceType} and pid is null order by seq
+    </select>
+
+   <!-- 查询所有子菜单-->
+    <select id="selectAllByTypeAndPid" resultType="com.nf.entity.Resource">
+        select distinct
+        <include refid="Base_Column_List"/> from resource
+        where  resource_type = #{resourceType} and pid = #{pId} order by seq
+    </select>
+    <!--查询所有菜单-->
+    <select id="selectAll" resultType="com.nf.entity.Resource">
+        select  distinct
+        <include refid="Base_Column_List"/> from  resource order by seq
+
+    </select>
+
+</mapper>

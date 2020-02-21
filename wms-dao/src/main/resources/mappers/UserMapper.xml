@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nf.dao.UserMapper">
+    <resultMap id="userVoResultMap" type="com.nf.entity.vo.UserVo">
+        <id column="id" property="id" />
+        <result column="login_name" property="loginName" />
+        <result column="name" property="name" />
+        <result column="password" property="password" />
+        <result column="sex" property="sex" />
+        <result column="age" property="age" />
+        <result column="user_type" property="userType" />
+        <result column="status" property="status" />
+        <result column="create_time" property="createTime" />
+        <result column="phone" property="phone" />
+        <result column="outtime" property="outtime"  />
+
+        <collection property="rolesList" ofType="com.nf.entity.Role">
+            <id column="roleId" property="id"/>
+            <result column="roleName" property="name"/>
+        </collection>
+    </resultMap>
+
+    <!-- 通用查询结果列-->
+    <sql id="Base_Column_List">
+        id, login_name AS loginName, name, password, sex, age, phone, user_type AS userType, status, organization_id AS organizationId, create_time AS createTime
+    </sql>
+
+    <!--得到id查询用户的信息以及角色类型-->
+    <select id="selectUserVoById"  resultMap="userVoResultMap" parameterType="java.lang.Long">
+        select
+            u.id, u.login_name, u.name, u.password,u.sex,u.age,u.phone,
+            u.user_type,u.status,u.create_time,r.id as roleId ,r.name as roleName
+        from user u
+            left join user_role ur on u.id = ur.user_id
+            left join role r on ur.role_id = r.id
+        <where>
+            u.id = #{id}
+        </where>
+    </select>
+    <!--查询用户并分页-->
+    <select id="selectUserVoPage" resultMap="userVoResultMap">
+        select
+            u.id,u.login_name, u.name,u.password,u.sex,u.age,u.phone,u.user_type,u.status,u.create_time,
+            r.id as roleId, r.name as roleName
+        from user u
+        left join user_role ur on u.id = ur.user_id
+        left join role r on ur.role_id = r.id
+        <where>
+            <if test=" name != null and name != '' ">
+                u.name = #{name}
+            </if>
+            <if test=" organizationId != null ">
+                u.organization_id = #{organizationId}
+            </if>
+            <if test=" startTime != null ">
+                and u.create_time >= #{startTime}
+            </if>
+            <if test=" endTime != null ">
+                <![CDATA[ and u.create_time <= #{endTime} ]]>
+            </if>
+        </where>
+    </select>
+
+
+    <!--查询用户登录名-->
+    <select id="selectByLoginName" resultMap="userVoResultMap">
+        select *
+        FROM user
+        <where>
+            login_name = #{user}
+        </where>
+    </select>
+
+    <!--查询用户类型是否是超级管理员-->
+    <select id="selectUserByType" resultMap="userVoResultMap">
+        SELECT * from user
+        <where>
+            user_type = 1
+            <if test=" name != null and name != '' ">
+                and name = #{name}
+            </if>
+        </where>
+    </select>
+
+    <!--查询用户类型是用户-->
+    <select id="selectByRole" resultMap="userVoResultMap">
+        select id,name from user
+        <where>
+            user_type = 1
+        </where>
+    </select>
+
+   <!-- 每次登录修改登录时间-->
+    <update id="updateOutTime">
+        update user set outtime = #{outtime}
+        where id = #{id}
+    </update>
+
+</mapper>

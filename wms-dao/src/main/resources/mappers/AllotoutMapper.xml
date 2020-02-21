@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nf.dao.AllotoutMapper">
+    <resultMap id="BaseResultMap" type="com.nf.entity.Allotout">
+        <id column="ao_id"  property="aoId"/>
+        <result column="ao_name"  property="aoName"/>
+        <result column="ao_SKUmodel" property="aoSkumodel"/>
+        <result column="ao_num"  property="aoNum"/>
+        <result column="ao_whid"  property="aoWhid"/>
+        <result column="ao_sippingNO"  property="aoSippingno"/>
+        <result column="ao_time" property="aoTime"/>
+        <result column="ao_volume"  property="aoVolume"/>
+        <collection property="godowns" ofType="com.nf.entity.Godown">
+            <id column="go_id"  property="goId"/>
+            <result column="go_whid" property="goWhid"/>
+            <result column="go_p"  property="goP"/>
+            <result column="go_volume"  property="goVolume"/>
+            <result column="go_usevolume"  property="goUsevolume"/>
+            <result column="go_rdvolume"  property="goRdvolume"/>
+        </collection>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+      ao_id, ao_name, ao_SKUmodel, ao_num, ao_whid, ao_sippingNO, ao_time, ao_volume
+    </sql>
+
+   <!-- 分页模糊查询调拨单-->
+    <select id="selectAllotoutPage" resultMap="BaseResultMap">
+        select
+        al.ao_id, al.ao_name, al.ao_SKUmodel, al.ao_num, al.ao_whid, al.ao_sippingNO, al.ao_time, al.ao_volume, g.*
+        from allotout al, godown g
+        where al.ao_whid = g.go_whid
+        <if test="name != null and name != '' ">
+            and ao_name like concat('%',#{name},'%')
+        </if>
+        <if test="startTime != null">
+           and ao_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            <![CDATA[ and ao_time <= #{endTime} ]]>
+        </if>
+    </select>
+
+    <!--id查询-->
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from  allotout where ao_id = #{aoId}
+    </select>
+
+    <!--  删除-->
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete  from  allotout where  ao_id = #{aoId}
+    </delete>
+
+    <insert id="insert">
+        insert into allotout(ao_id,ao_name,ao_SKUmodel,ao_num,ao_whid,
+        ao_sippingNO,ao_time,ao_volume)
+        values(#{aoId}, #{aoName}, #{aoSkumodel},
+          #{aoNum}, #{aoWhid}, #{aoSippingno},
+          #{aoTime}, #{aoVolume})
+    </insert>
+
+    <update id="updateByPrimaryKey">
+        update  allotout set
+        ao_name = #{aoName},
+        ao_SKUmodel= #{aoSkumodel},
+        ao_num = #{aoNum},
+        ao_whid = #{aoWhid},
+        ao_sippingNO = #{aoSippingno},
+        ao_time = #{aoTime},
+        ao_volume = #{aoVolume}
+        where ao_id = #{aoId}
+    </update>
+
+    <insert id="insertSelective" parameterType="com.nf.entity.Allotout">
+        insert into allotput
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="apId != null">
+                ap_id,
+            </if>
+            <if test="apName != null">
+                ap_name,
+            </if>
+            <if test="apSkumodel != null">
+                ap_SKUmodel,
+            </if>
+            <if test="apNum != null">
+                ap_num,
+            </if>
+            <if test="apWhid != null">
+                ap_whid,
+            </if>
+            <if test="apSipping != null">
+                ap_sipping,
+            </if>
+            <if test="apTime != null">
+                ap_time,
+            </if>
+            <if test="apVolume != null">
+                ap_volume,
+            </if>
+            <if test="apAddress != null">
+                ap_address,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="apId != null">
+                #{apId},
+            </if>
+            <if test="apName != null">
+                #{apName},
+            </if>
+            <if test="apSkumodel != null">
+                #{apSkumodel},
+            </if>
+            <if test="apNum != null">
+                #{apNum},
+            </if>
+            <if test="apWhid != null">
+                #{apWhid,jdbcType=VARCHAR},
+            </if>
+            <if test="apSipping != null">
+                #{apSipping},
+            </if>
+            <if test="apTime != null">
+                #{apTime},
+            </if>
+            <if test="apVolume != null">
+                #{apVolume},
+            </if>
+            <if test="apAddress != null">
+                #{apAddress},
+            </if>
+        </trim>
+    </insert>
+
+
+</mapper>

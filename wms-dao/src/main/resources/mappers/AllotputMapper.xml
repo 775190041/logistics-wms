@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nf.dao.AllotputMapper">
+
+    <resultMap id="BaseResultMap" type="com.nf.entity.Allotput">
+        <id column="ap_id"  property="apId" />
+        <result column="ap_name"  property="apName" />
+        <result column="ap_SKUmodel"  property="apSkumodel" />
+        <result column="ap_num"  property="apNum" />
+        <result column="ap_whid"  property="apWhid" />
+        <result column="ap_sipping" property="apSipping" />
+        <result column="ap_time"  property="apTime" />
+        <result column="ap_volume"  property="apVolume" />
+        <result column="ap_address"  property="apAddress" />
+        <collection property="godowns" ofType="com.nf.entity.Godown">
+            <id column="go_id"  property="goId"/>
+            <result column="go_whid"  property="goWhid"/>
+            <result column="go_p"  property="goP"/>
+            <result column="go_volume"  property="goVolume"/>
+            <result column="go_usevolume"  property="goUsevolume"/>
+            <result column="go_rdvolume"  property="goRdvolume"/>
+        </collection>
+    </resultMap>
+    <sql id="Base_Column_List">
+        ap_id, ap_name, ap_SKUmodel, ap_num, ap_whid, ap_sipping, ap_time, ap_volume, ap_address
+    </sql>
+   <!-- 模糊分页查询-->
+    <select id="selectAll"  resultMap="BaseResultMap">
+        select a.*,g.*
+        from allotput a,godown g where a.ap_whid=g.go_whid
+        <if test=" apName != null and apName != '' ">
+            and ap_name like concat('%',#{apName},'%')
+        </if>
+        <if test=" apSipping != null and apSipping != '' ">
+            and ap_sipping = #{apSipping}
+        </if>
+        <if test=" startTime != null ">
+            and <![CDATA[  ap_time >= #{startTime} ]]>
+        </if>
+        <if test=" endTime != null ">
+            <![CDATA[ and ap_time <= #{endTime} ]]>
+        </if>
+    </select>
+
+  <!--  id查询所有信息-->
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from allotput
+        where ap_id = #{apId}
+    </select>
+
+   <!-- 根据仓库名称查询-->
+<!--    <select id="selectByPrimaryKeyApWhId" resultMap="BaseResultMap">
+        select
+            <include refid="Base_Column_List" />
+         from allotput where ap_whid = #{apWhId}
+    </select>-->
+
+<!-- 修改所有信息 -->
+    <update id="updateByPrimaryKey" parameterType="com.nf.entity.Allotput">
+    update allotput
+    set ap_name = #{apName},
+      ap_SKUmodel = #{apSkumodel},
+      ap_num = #{apNum},
+      ap_whid = #{apWhid},
+      ap_sipping = #{apSipping},
+      ap_time = #{apTime},
+      ap_volume = #{apVolume},
+      ap_address = #{apAddress}
+    where ap_id = #{apId}
+  </update>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from  allotput
+        where  ap_id = #{apId}
+    </delete>
+</mapper>

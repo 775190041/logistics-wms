@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nf.dao.CrossDatabaseMapper">
+    <resultMap id="BaseResultMap" type="com.nf.entity.CrossDatabase">
+        <id column="cd_id" jdbcType="INTEGER" property="cdId"/>
+        <result column="cd_name" property="cdName"/>
+        <result column="cd_SKUmodel" property="cdSkumodel"/>
+        <result column="cd_num" property="cdNum"/>
+        <result column="cd_whid" property="cdWhid"/>
+        <result column="cd_oddnumbers" property="cdOddnumbers"/>
+        <result column="cd_time" property="cdTime"/>
+        <result column="cd_volume" property="cdVolume"/>
+        <result column="cd_store"  property="cdStore"/>
+        <result column="cd_phone" property="cdPhone"/>
+        <result column="cd_damage"  property="cdDamage"/>
+        <result column="cd_cause"  property="cdCause"/>
+        <result column="cd_totalweigh"  property="cdTotalweigh"/>
+        <result column="cd_status"  property="cdStatus"/>
+        <collection property="godowns" ofType="com.nf.entity.Godown">
+            <id column="go_id"  property="goId"/>
+            <result column="go_whid"  property="goWhid"/>
+            <result column="go_p"  property="goP"/>
+            <result column="go_volume"  property="goVolume"/>
+            <result column="go_usevolume"  property="goUsevolume"/>
+            <result column="go_rdvolume"  property="goRdvolume"/>
+        </collection>
+    </resultMap>
+    <sql id="Base_Column_List">
+      cd_id, cd_name, cd_SKUmodel, cd_num, cd_whid, cd_oddnumbers, cd_time, cd_volume, cd_store, cd_phone, cd_damage, cd_cause, cd_totalweigh, cd_status
+    </sql>
+
+    <!-- 分页查询 -->
+    <select id="selectDataGrid" resultMap="BaseResultMap">
+        select
+        cr.cd_id, cr.cd_name, cr.cd_SKUmodel, cr.cd_num, cr.cd_whid, cr.cd_oddnumbers, cr.cd_time, cr.cd_volume, cr.cd_store, cr.cd_phone, cr.cd_damage, cr.cd_cause, cr.cd_totalweigh, cr.cd_status , g.*
+        from cross_database cr, godown g
+        where cr.cd_whid = g.go_whid
+        <if test=" name != null and name != '' ">
+            and cd_name like concat('%', #{name}, '%')
+        </if>
+        <if test="startTime != null">
+            and cd_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            <![CDATA[ and cd_time <= #{endTime} ]]>
+        </if>
+    </select>
+
+    <insert id="insert" parameterType="com.nf.entity.CrossDatabase">
+    insert into cross_database (cd_id, cd_name, cd_SKUmodel,
+        cd_num, cd_whid, cd_oddnumbers,
+        cd_time, cd_volume, cd_store, cd_phone, cd_damage, cd_cause, cd_totalweigh, cd_status)
+      values (#{cdId}, #{cdName}, #{cdSkumodel},
+        #{cdNum}, #{cdWhid}, #{cdOddnumbers},
+        #{cdTime}, #{cdVolume},#{cdStore}, #{cdPhone},
+        #{cdDamage},#{cdCause},#{cdTotalweigh},#{cdStatus})
+    </insert>
+
+    <!-- 根据ID查询 -->
+    <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from cross_database
+        where cd_id = #{cdId}
+    </select>
+
+    <update id="updateCrossDatabase" parameterType="com.nf.entity.CrossDatabase">
+        update cross_database
+        <set>
+            <if test="cdName != null">
+                cd_name = #{cdName},
+            </if>
+            <if test="cdSkumodel != null">
+                cd_SKUmodel = #{cdSkumodel},
+            </if>
+            <if test="cdNum != null">
+                cd_num = #{cdNum},
+            </if>
+            <if test="cdWhid != null">
+                cd_whid = #{cdWhid},
+            </if>
+            <if test="cdOddnumbers != null">
+                cd_oddnumbers = #{cdOddnumbers},
+            </if>
+            <if test="cdTime != null">
+                cd_time = #{cdTime},
+            </if>
+            <if test="cdVolume != null">
+                cd_volume = #{cdVolume},
+            </if>
+            <if test="cdStore != null">
+                cd_store = #{cdStore},
+            </if>
+            <if test="cdPhone != null">
+                cd_phone = #{cdPhone},
+            </if>
+            <if test="cdDamage != null">
+                cd_damage = #{cdDamage},
+            </if>
+            <if test="cdCause != null">
+                cd_cause = #{cdCause},
+            </if>
+            <if test="cdTotalweigh != null">
+                cd_totalweigh = #{cdTotalweigh},
+            </if>
+            <if test="cdStatus != null">
+                cd_status = #{cdStatus},
+            </if>
+        </set>
+        where cd_id = #{cdId}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from cross_database where
+        cd_id = #{cdId}
+    </delete>
+</mapper>

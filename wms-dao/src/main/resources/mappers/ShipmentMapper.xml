@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nf.dao.ShipmentMapper">
+
+    <resultMap id="BaseResultMap" type="com.nf.entity.Shipment">
+        <id column="sh_id" jdbcType="INTEGER" property="shId"/>
+        <result column="sh_storeid"  property="shStoreid"/>
+        <result column="sh_time"  property="shTime"/>
+        <result column="sh_phone"  property="shPhone"/>
+        <result column="sh_sippingNO"  property="shSippingno"/>
+        <result column="sh_whid"  property="shWhid"/>
+        <result column="sh_damage"  property="shDamage"/>
+        <result column="sh_cause" property="shCause"/>
+        <result column="sh_SKUmodel"  property="shSkumodel"/>
+        <result column="sh_shnum"  property="shShnum"/>
+        <result column="sh_totalweigh"  property="shTotalweigh"/>
+        <result column="sh_totalvolume"  property="shTotalvolume"/>
+        <result column="status"  property="status"/>
+        <collection property="godowns" ofType="com.nf.entity.Godown">
+            <id column="go_id"  property="goId"/>
+            <result column="go_whid"  property="goWhid"/>
+            <result column="go_p"  property="goP"/>
+            <result column="go_volume"  property="goVolume"/>
+            <result column="go_usevolume"  property="goUsevolume"/>
+            <result column="go_rdvolume"  property="goRdvolume"/>
+        </collection>
+    </resultMap>
+    <sql id="Base_Column_List">
+        sh_id, sh_storeid, sh_time, sh_phone, sh_sippingNO, sh_whid, sh_damage, sh_cause,
+        sh_SKUmodel, sh_shnum, sh_totalweigh, sh_totalvolume, status
+    </sql>
+
+
+    <!-- 分页查询 -->
+    <select id="selectShipmentPage" resultMap="BaseResultMap">
+        select sh.sh_id, sh.sh_storeid, sh.sh_time, sh.sh_phone, sh.sh_sippingNO, sh.sh_whid, sh.sh_damage, sh.sh_cause, sh.sh_SKUmodel, sh.sh_shnum, sh.sh_totalweigh, sh.sh_totalvolume, sh.status,  g.*
+        from shipment sh, godown g
+        where sh.sh_whid = g.go_whid
+        <if test=" name != null and name != '' ">
+            and sh_storeid like concat('%', #{name}, '%')
+        </if>
+        <if test="startTime != null">
+            <![CDATA[ and sh_time >= #{startTime} ]]>
+        </if>
+        <if test="endTime != null">
+            <![CDATA[ and sh_time <= #{endTime} ]]>
+        </if>
+    </select>
+
+    <!-- 查询所有不带条件 -->
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from shipment
+    </select>
+
+    <insert id="addShipment" parameterType="com.nf.entity.Shipment">
+        insert into shipment (sh_id, sh_storeid, sh_time,
+        sh_phone, sh_sippingNO, sh_whid,
+        sh_damage, sh_cause, sh_SKUmodel,
+        sh_shnum, sh_totalweigh, sh_totalvolume, status
+        )
+        values (#{shId}, #{shStoreid}, #{shTime},
+        #{shPhone}, #{shSippingno}, #{shWhid},
+        #{shDamage}, #{shCause}, #{shSkumodel,jdbcType=VARCHAR},
+        #{shShnum}, #{shTotalweigh}, #{shTotalvolume},
+        #{status}
+        )
+    </insert>
+
+    <!-- 根据ID查询 -->
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from shipment
+        where sh_id = #{shId}
+    </select>
+
+    <!-- 根据ID删除-->
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from shipment
+        where sh_id = #{shId}
+    </delete>
+
+    <insert id="insertByPrimaryKey" parameterType="com.nf.entity.Shipment">
+        insert into shipment (sh_id, sh_storeid, sh_time,
+        sh_phone, sh_sippingNO, sh_whid,
+        sh_damage, sh_cause, sh_SKUmodel,
+        sh_shnum, sh_totalweigh, sh_totalvolume, status)
+        values (#{shId}, #{shStoreid}, #{shTime},
+        #{shPhone}, #{shSippingno}, #{shWhid},
+        #{shDamage}, #{shCause}, #{shSkumodel},
+        #{shShnum}, #{shTotalweigh}, #{shTotalvolume}, #{status})
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.nf.entity.Shipment">
+        update shipment
+        <set>
+            <if test="shStoreid != null">
+                sh_storeid = #{shStoreid},
+            </if>
+            <if test="shTime != null">
+                sh_time = #{shTime},
+            </if>
+            <if test="shPhone != null">
+                sh_phone = #{shPhone},
+            </if>
+            <if test="shSippingno != null">
+                sh_sippingNO = #{shSippingno},
+            </if>
+            <if test="shWhid != null">
+                sh_whid = #{shWhid},
+            </if>
+            <if test="shDamage != null">
+                sh_damage = #{shDamage},
+            </if>
+            <if test="shCause != null">
+                sh_cause = #{shCause},
+            </if>
+            <if test="shSkumodel != null">
+                sh_SKUmodel = #{shSkumodel},
+            </if>
+            <if test="shShnum != null">
+                sh_shnum = #{shShnum},
+            </if>
+            <if test="shTotalweigh != null">
+                sh_totalweigh = #{shTotalweigh},
+            </if>
+            <if test="shTotalvolume != null">
+                sh_totalvolume = #{shTotalvolume},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where sh_id = #{shId}
+    </update>
+</mapper>

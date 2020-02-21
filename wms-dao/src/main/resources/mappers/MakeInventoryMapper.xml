@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nf.dao.MakeInventoryMapper">
+
+    <resultMap id="BaseResultMap" type="com.nf.entity.MakeInventory">
+        <id column="mi_id" jdbcType="INTEGER" property="miId" />
+        <result column="mi_name" property="miName" />
+        <result column="mi_SKUmodel"  property="miSkumodel" />
+        <result column="mi_num"  property="miNum" />
+        <result column="mi_Actual"  property="miActual" />
+        <result column="mi_names" property="miNames" />
+        <result column="mi_order"  property="miOrder"/>
+        <result column="mi_whid" property="miWhid" />
+        <result column="mi_time"  property="miTime" />
+        <result column="mi_status"  property="miStatus"/>
+        <collection property="godowns" ofType="com.nf.entity.Godown">
+            <id column="go_id" property="goId"/>
+            <result column="go_whid" property="goWhid"/>
+            <result column="go_p"  property="goP"/>
+            <result column="go_volume" property="goVolume"/>
+            <result column="go_usevolume" property="goUsevolume"/>
+            <result column="go_rdvolume" property="goRdvolume"/>
+        </collection>
+    </resultMap>
+    <sql id="Base_Column_List">
+        mi_id, mi_name, mi_SKUmodel, mi_num,mi_Actual, mi_names, mi_whid, mi_time, mi_order,mi_status
+    </sql>
+    <!--查询盘点单-->
+    <select id="select" resultMap="BaseResultMap">
+        select
+        m.*,g.*
+        from make_inventory m,godown g where m.mi_whid = g.go_whid
+        <if test="SKM != null and SKM != ''">
+            and mi_SKUmodel like concat('%',#{SKM},'%')
+        </if>
+        <if test="startTime != null">
+            and mi_time >= #{stateTime}
+        </if>
+        <if test="endTime != null">
+            <![CDATA[ and mi_time <= #{endTime} ]]>
+        </if>
+    </select>
+    <!--添加盘点单-->
+    <insert id="insert" parameterType="com.nf.entity.MakeInventory">
+        insert into make_inventory (mi_id,mi_name, mi_SKUmodel, mi_num, mi_names,
+            mi_order, mi_whid, mi_time, mi_Actual,mi_status)
+        values (#{miId}, #{miName}, #{miSkumodel},#{miNum},#{miNames}, #{miOrder},
+            #{miWhid}, #{miTime},#{miActual} ,#{miStatus})
+    </insert>
+    <!--根据id查询盘点单-->
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from make_inventory
+        where mi_id = #{miId}
+    </select>
+
+    <!--根据id查询盘点单-->
+    <select id="selectBySkumodel" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from make_inventory
+        where mi_SKUmodel = #{miSkumodel}
+    </select>
+    <!--修改盘点单数据状态-->
+    <update id="updateByPrimaryKey" parameterType="com.nf.entity.MakeInventory">
+        update make_inventory
+        set  mi_status = #{miStatus}
+        where mi_id = #{miId}
+    </update>
+        <!--删除盘点单信息-->
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from make_inventory where mi_id = #{miId}
+    </delete>
+</mapper>

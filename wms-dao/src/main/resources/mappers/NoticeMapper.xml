@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nf.dao.NoticeMapper">
+    <resultMap id="BaseResultMap" type="com.nf.entity.Notice">
+        <id column="nid"  property="nid" />
+        <result column="text"  property="text" />
+        <result column="userid"  property="userid" />
+        <result column="ntime"  property="ntime" />
+        <result column="nstatus"  property="nstatus" />
+
+        <collection property="users" ofType="com.nf.entity.User">
+            <id column="id"  property="id"/>
+            <result column="login_name"  property="loginName" />
+            <result column="name"  property="name" />
+            <result column="password"  property="password" />
+            <result column="sex"  property="sex" />
+            <result column="age"  property="age" />
+            <result column="phone"  property="phone" />
+            <result column="userType"  property="userType" />
+            <result column="status"  property="status" />
+            <result column="createTime"  property="createTime" />
+        </collection>
+    </resultMap>
+    <sql id="Base_Column_List">
+    nid, text, userid, ntime, nstatus
+   </sql>
+    <!-- id查询某个公告信息-->
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+            <include refid="Base_Column_List"/>
+        from notice
+            where nid =#{nid,jdbcType=INTEGER}
+
+    </select>
+    <!-- 分页查询所有公告的信息以及用户信息 -->
+    <select id="selectDataGrid" resultMap="BaseResultMap">
+    select n.*,u.*
+    from notice n,user u where n.userid=u.id
+  </select>
+    <!--查询公告状态 并以发布公告时间进行排序 限制查询出一条数据-->
+    <select id="selectByDateUP" resultMap="BaseResultMap">
+    select * from notice where nstatus = 0 order by ntime desc   limit 1
+  </select>
+
+    <!--删除某个公告-->
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from notice
+    where nid = #{nid,jdbcType=INTEGER}
+  </delete>
+
+   <!-- 添加公告-->
+    <insert id="insert" parameterType="com.nf.entity.Notice">
+    insert into notice (text, userid,ntime, nstatus )
+    values (#{text}, #{userid},
+    		#{ntime}, #{nstatus})
+  </insert>
+
+   <!-- 选择性添加公告-->
+    <insert id="insertSelective" parameterType="com.nf.entity.Notice">
+        insert into notice
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="text != null">
+                text,
+            </if>
+            <if test="userid != null">
+                userid,
+            </if>
+            <if test="ntime != null">
+                ntime,
+            </if>
+            <if test="nstatus != null">
+                nstatus,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="text != null">
+                #{text},
+            </if>
+            <if test="userid != null">
+                #{userid},
+            </if>
+            <if test="ntime != null">
+                #{ntime},
+            </if>
+            <if test="nstatus != null">
+                #{nstatus},
+            </if>
+        </trim>
+    </insert>
+
+   <!-- 修改选择性公告-->
+    <update id="updateByPrimaryKeySelective" parameterType="com.nf.entity.Notice">
+        update notice
+        <set>
+            <if test="text != null">
+                #{text},
+            </if>
+            <if test="userid != null">
+                #{userid},
+            </if>
+            <if test="ntime != null">
+                #{ntime},
+            </if>
+            <if test="nstatus != null">
+                #{nstatus},
+            </if>
+        </set>
+        where nid = #{nid}
+    </update>
+
+    <!--修改公告-->
+    <update id="updateByPrimaryKey" parameterType="com.nf.entity.Notice">
+    update notice
+    set text = #{text},
+      userid = #{userid},
+      ntime = #{ntime},
+      nstatus = #{nstatus}
+    where nid = #{nid}
+  </update>
+</mapper>
