@@ -25,7 +25,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
 
         <junit.version>4.12</junit.version>
-        <mysql.version>5.1.47</mysql.version>
+        <mysql.version>8.0.28</mysql.version>
         <druid.version>1.1.20</druid.version>
         <dbutils.version>1.7</dbutils.version>
         <javax.servlet.version>3.1.0</javax.servlet.version>
